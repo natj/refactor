@@ -158,7 +158,12 @@ def tsplit(s, sep):
     return stack
 
 
-def read_variables(mode, filename='files.txt'):
+def read_variables(
+        mode, 
+        filename='files.txt',
+        detect_only_camelcase=False,
+        detect_only_underscore=False,
+        ):
 
     with open(filename) as f:
         s = f.readlines()
@@ -184,6 +189,14 @@ def read_variables(mode, filename='files.txt'):
                 if keyword.iskeyword(word):
                     continue
 
+                if detect_only_camelcase:
+                    if word.lower() == word:
+                        continue
+
+                if detect_only_underscore:
+                    if not(word.match('_')):
+                        continue
+
                 if word not in wordcount:
                     wordcount[word] = 1
                 else:
@@ -194,8 +207,8 @@ def read_variables(mode, filename='files.txt'):
 
     #for k,v in wordcount.items():
     for k,v, in sorted(wordcount.items(), key=lambda words: words[1], reverse = False):
-        if v > 1:
-            print(k, v)
+        #if v > 1:
+        print(k, v)
 
     with open('variables.txt', 'a') as ffile:
         for k,v, in sorted(wordcount.items(), key=lambda words: words[1], reverse = False):
@@ -212,7 +225,9 @@ if __name__ == '__main__':
 
     #create variable name listing
     if True:
-        read_variables('cpp', 'files.txt')
+        #read_variables('cpp', 'files.txt')
+        read_variables('cpp', 'files.txt', detect_only_camelcase=True)
+        #read_variables('cpp', 'files.txt', detect_only_underscore=True)
 
 
 
