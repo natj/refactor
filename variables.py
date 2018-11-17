@@ -215,6 +215,31 @@ def read_variables(
             ffile.write(k +'\n')
 
 
+
+
+
+
+def search_and_replace(
+        files = 'files.txt',,
+        replace_filename='replace.txt'
+        ):
+
+    wordreplaces={}
+    with open(replace_filename) as f:
+        for line in f.readlines():
+            both = line.split('=>')
+            try:
+                orig, new = both
+                orig = orig.strip()
+                new  = new.strip()
+            except:
+                continue
+            wordreplaces[orig] = new
+
+    for k,v in wordreplaces.items():
+        print("  {} => {}".format(k,v))
+
+
 if __name__ == '__main__':
 
     #create file listing
@@ -224,10 +249,13 @@ if __name__ == '__main__':
         write_files(fs)
 
     #create variable name listing
-    if True:
+    if False:
         #read_variables('cpp', 'files.txt')
         read_variables('cpp', 'files.txt', detect_only_camelcase=True)
         #read_variables('cpp', 'files.txt', detect_only_underscore=True)
+
+    if True:
+        search_and_replace('files.txt', 'replace.txt')
 
 
 
