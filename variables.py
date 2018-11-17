@@ -45,12 +45,55 @@ def write_files(fs):
                 ffile.write(m + '\n')
 
 
+# split file listing into different modes
+def split_list(s, mode):
+    fs = []
+
+    readmode = False
+    for f in s:
+        fl = f.strip()
+
+        #start reading when correct mode is detected
+        if fl == '['+mode+']':
+            readmode = True
+            continue
+
+        #stop reading when other mode is detected
+        if  fl.startswith('['): 
+            print("found stop at : ", fl)
+            readmode = False
+
+        #filename matches, append
+        if readmode:
+            if not(fl == ''):
+                fs.append(fl)
+
+    return fs
+
+
+
+def read_variables(mode, filename='files.txt'):
+
+    with open(filename) as f:
+        s = f.readlines()
+    ffiles = split_list(s, mode)
+    
+    print(ffiles)
+
+
+
+
 if __name__ == '__main__':
-    rdir = '../plasmabox/corgi'
 
-    fs = get_files(rdir, ('.py', '.c++', '.h'))
-    write_files(fs)
+    #create file listing
+    if False:
+        rdir = '../plasmabox/corgi'
+        fs = get_files(rdir, ('.py', '.c++', '.h'))
+        write_files(fs)
 
+    #create variable name listing
+    if True:
+        read_variables('cpp', 'files.txt')
 
 
 
