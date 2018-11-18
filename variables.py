@@ -245,14 +245,33 @@ def analyze_search_replace(filename, old_string, new_string):
     linen_old = []
     linen_new = []
     for linen, line in enumerate(text):
-        c_old += line.count(old_string)
-        linen_old.append(linen)
 
-        c_new += line.count(new_string)
-        linen_new.append(linen)
+        #old string
+        c = line.count(old_string)
+        if c > 0:
+            linen_old.append(linen)
+        c_old += c
+
+        #new string
+        c = line.count(new_string)
+        if c > 0:
+            linen_new.append(linen)
+        c_new += c
 
     if c_old + c_new > 0:
         print("    {} hits ({} new hits)".format(c_old, c_new))
+        
+        #print(linen_old)
+        #print(linen_new)
+
+    if c_old + c_new > 0:
+        print("*********")
+        for linen in linen_old:
+            print("{}: {}".format(linen, text[linen].strip() ))
+
+        for linen in linen_new:
+            print("{}: {}".format(linen, text[linen].strip() ))
+        print("*********")
     
 
 
