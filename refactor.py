@@ -7,6 +7,10 @@ from constant_symbols import splitsymbols
 from constant_symbols import ignorewords
 from constant_symbols import ignorewords2
 
+import re
+
+
+
 def get_files(mypath, suffix):
 
     f = []
@@ -163,10 +167,21 @@ def inplace_change(filename, old_string, new_string):
             return
     
     # Safely write the changed content, if found in the file
-    filename2 = filename + '_sr'
+    filename2 = filename
+    #filename2 = filename + '_sr'
+
+    #with open(filename2, 'w') as f:
+    #    print('Changing "{old_string}" to "{new_string}" in {filename}'.format(**locals()))
+    #    text = text.replace(old_string, new_string)
+    #    f.write(text)
+
+    # more advanced regexp based search
     with open(filename2, 'w') as f:
-        print('Changing "{old_string}" to "{new_string}" in {filename}'.format(**locals()))
-        text = text.replace(old_string, new_string)
+        #print('Changing "{old_string}" to "{new_string}" in {filename}'.format(**locals()))
+        text = re.sub(
+                "([^a-zA-Z0-9])"+old_string+"([^a-zA-Z0-9])", 
+                "\\1"+new_string+"\\2",
+                text)
         f.write(text)
 
     return
@@ -205,12 +220,34 @@ def analyze_search_replace(filename, old_string, new_string):
     if c_old + c_new > 0:
         print("*********")
         for linen in linen_old:
-            print("{}: {}".format(linen, text[linen].strip() ))
+            print("{}: {}".format(linen+1, text[linen].strip() ))
 
         for linen in linen_new:
-            print("{}: {}".format(linen, text[linen].strip() ))
+            print("{}: {}".format(linen+1, text[linen].strip() ))
         print("*********")
     
+    #detect possible problematic cases with regexp
+    if c_old > 0:
+        for linen in linen_old:
+            line = text[linen].strip()
+
+            #y1 = re.search("\\B"+old_string, line)
+            #y2 = re.search(old_string+"\\B", line)
+            #print(y1, y2)
+
+            #x1 = re.search("\\b"+old_string+"\\b", line)
+            # [^a-zA-Z0-9]
+            x1 = re.search("[^a-zA-Z0-9]"+old_string+"[^a-zA-Z0-9]", line)
+
+            #print(linen+1,x1)
+            #print("{}: {}".format(linen+1, line))
+
+
+    if c_old > 0:
+        return True
+    else:
+        return False
+
 
 
 def search_and_replace(
@@ -250,11 +287,17 @@ def search_and_replace(
             ffiles = split_list(filelist, mode)
             for filename in ffiles:
                 print(filename)
-                analyze_search_replace(filename, k, v)
-                
+
+                if( analyze_search_replace(filename, k, v) ):
+                    inplace_change(filename, k, v)
 
         print("\n")
 
+
+
+#--------------------------------------------------
+#--------------------------------------------------
+#--------------------------------------------------
 
 if __name__ == '__main__':
 
