@@ -12,7 +12,8 @@ def inplace_change(filename, old_string, new_string):
             return
 
     # Safely write the changed content, if found in the file
-    with open(filename, 'w') as f:
+    filename2 = filename + '_sr'
+    with open(filename2, 'w') as f:
         print 'Changing "{old_string}" to "{new_string}" in {filename}'.format(**locals())
         s = s.replace(old_string, new_string)
         f.write(s)

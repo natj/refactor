@@ -60,7 +60,7 @@ def split_list(s, mode):
 
         #stop reading when other mode is detected
         if  fl.startswith('['): 
-            print("found stop at : ", fl)
+            #print("found stop at : ", fl)
             readmode = False
 
         #filename matches, append
@@ -215,15 +215,53 @@ def read_variables(
             ffile.write(k +'\n')
 
 
+# read file content, replace string and write back to file
+def inplace_change(filename, old_string, new_string):
+
+    with open(filename) as f:
+        text = f.read()
+        if old_string not in text:
+            print('"{old_string}" not found in {filename}'.format(**locals()))
+            return
+    
+    # Safely write the changed content, if found in the file
+    filename2 = filename + '_sr'
+    with open(filename2, 'w') as f:
+        print('Changing "{old_string}" to "{new_string}" in {filename}'.format(**locals()))
+        text = text.replace(old_string, new_string)
+        f.write(text)
+
+    return
 
 
+# analyze file content to make sure replacing is possible
+def analyze_search_replace(filename, old_string, new_string):
+
+    with open(filename) as f:
+        text = f.readlines()
+
+    c_old = 0
+    c_new = 0
+    linen_old = []
+    linen_new = []
+    for linen, line in enumerate(text):
+        c_old += line.count(old_string)
+        linen_old.append(linen)
+
+        c_new += line.count(new_string)
+        linen_new.append(linen)
+
+    if c_old + c_new > 0:
+        print("    {} hits ({} new hits)".format(c_old, c_new))
+    
 
 
 def search_and_replace(
-        files = 'files.txt',,
-        replace_filename='replace.txt'
+        files = 'files.txt',
+        replace_filename='replace.txt',
         ):
 
+    # read search and replace list
     wordreplaces={}
     with open(replace_filename) as f:
         for line in f.readlines():
@@ -236,8 +274,29 @@ def search_and_replace(
                 continue
             wordreplaces[orig] = new
 
+
+    # read project file listing
+    with open(files) as f:
+        filelist = f.readlines()
+    ffiles = split_list(filelist, 'py')
+    
+
+    modes = ['py', 'cpp']
     for k,v in wordreplaces.items():
+        print("-------------------------------------------------- ")
+        print("replacing:")
         print("  {} => {}".format(k,v))
+
+        #loop over different file types
+        for mode in modes:
+            print("[{}]".format(mode))
+            ffiles = split_list(filelist, mode)
+            for filename in ffiles:
+                print(filename)
+                analyze_search_replace(filename, k, v)
+                
+
+        print("\n")
 
 
 if __name__ == '__main__':
