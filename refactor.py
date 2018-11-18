@@ -179,7 +179,7 @@ def inplace_change(filename, old_string, new_string):
     with open(filename2, 'w') as f:
         #print('Changing "{old_string}" to "{new_string}" in {filename}'.format(**locals()))
         text = re.sub(
-                "([^a-zA-Z0-9])"+old_string+"([^a-zA-Z0-9])", 
+                "([^a-zA-Z0-9_])"+old_string+"([^a-zA-Z0-9_])", 
                 "\\1"+new_string+"\\2",
                 text)
         f.write(text)
@@ -237,7 +237,7 @@ def analyze_search_replace(filename, old_string, new_string):
 
             #x1 = re.search("\\b"+old_string+"\\b", line)
             # [^a-zA-Z0-9]
-            x1 = re.search("[^a-zA-Z0-9]"+old_string+"[^a-zA-Z0-9]", line)
+            x1 = re.search("[^a-zA-Z0-9_]"+old_string+"[^a-zA-Z0-9_]", line)
 
             #print(linen+1,x1)
             #print("{}: {}".format(linen+1, line))
